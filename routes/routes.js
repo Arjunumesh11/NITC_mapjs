@@ -6,9 +6,17 @@ nitc_buliding.loadDatabase();
 const routes = express();
 routes.get('/api/node/:name', (req, res) => {
     var data = req.params;
-    nitc_buliding.findOne({ name: data.name }, (err, doc) => {
+    if (data.name == "all") {
+        nitc_buliding.find({}, (err, doc) => {
 
-        res.send(doc);
-    });
+            res.send(doc);
+        });
+    }
+    else {
+        nitc_buliding.findOne({ name: data.name }, (err, doc) => {
+
+            res.send(doc);
+        });
+    }
 });
 module.exports = routes;
