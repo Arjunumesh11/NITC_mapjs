@@ -1,23 +1,17 @@
 var Datastore = require('nedb');
 db = new Datastore('nitc_nodes_all.db');
-db1 = new Datastore('nitc_paths_all.db');
-nit = new Datastore('nitc_paths.db');
+nitc_node = new Datastore('nitc_nodes.db');
+nitc_path = new Datastore('nitc_paths.db');
 db.loadDatabase();
-db1.loadDatabase();
-nit.loadDatabase();
-nit.find({}, (err, doc) => {
-    for (key in doc) {
-        for (node in doc[key].nodes) {
-            db.findOne({ id: doc[key].nodes[node] }, (err, latlng) => {
-                console.log(doc[key].id);
-                let ids = doc[key].id;
-                if (latlng) {
-                    db1.find({ id: ids }, (err, de) => {
+nitc_node.loadDatabase();
+nitc_path.loadDatabase();
+nitc_node.find({ "tags.building": { $in: ['yes'] } }, (err, doc) => {
+    doc.forEach(element => {
+        // console.log(element.nodes);
+        db.find({ id: { $in: element.nodes } }, { lat: 1, lon: 1, _id: 0 }, (err, doc1) => {
+            // console.log(doc1);
+            nitc_path.insert({ id: element.id, nodes: doc1 });
+        });
+    });
 
-                    });
-                }
-            });
-        }
-    }
 });
-db1.persistence.compactDatafile();

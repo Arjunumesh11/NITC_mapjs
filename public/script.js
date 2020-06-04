@@ -10,5 +10,15 @@ async function getdata() {
     for (var key in data)
         L.marker([data[key].lat, data[key].lon], { title: data[key].name }).addTo(mymap);
 }
-getdata();
+async function drawline() {
+    const response = await fetch("/api/path/asdf");
+    const data = await response.json();
+    data.forEach(async element => {
+
+        var ar = await element.nodes.map((obj) => { return (Object.values(obj)); });
+        var polyline = L.polygon(ar, { color: 'red', smoothFactor: 20 }).addTo(mymap);
+    });
+}
+drawline();
+//getdata();
 
